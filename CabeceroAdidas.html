@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabecera Adidas</title>
+
+    <style>
+        /* RESET UNIVERSAL - Elimina estilos por defecto del navegador */
+        * {
+            margin: 0;
+            /* Elimina márgenes externos */
+            padding: 0;
+            /* Elimina relleno interno */
+            box-sizing: border-box;
+            /* El tamaño del elemento incluye bordes y relleno */
+            font-family: Arial, Helvetica, sans-serif;
+            /* Fuente aplicada a todo el documento */
+        }
+
+        /* BARRA SUPERIOR - Anuncio de descuentos en color negro */
+        .top-bar {
+            background: rgb(0, 0, 0);
+            /* Fondo negro */
+            color: white;
+            /* Texto blanco */
+            text-align: center;
+            /* Texto centrado */
+            font-size: 12px;
+            /* Letra pequeña */
+            padding: 8px;
+            /* Separación interna */
+        }
+
+        /* HEADER/ENCABEZADO - Contenedor principal de la cabecera */
+        header {
+            display: flex;
+            /* Usa flexbox para alinear elementos en fila */
+            align-items: center;
+            /* Centra los elementos verticalmente */
+            justify-content: space-between;
+            /* Distribuye los elementos (logo, menú, buscador) */
+            padding: 15px 20px;
+            /* Separación interna: 15px arriba/abajo, 20px izq/der */
+            border-bottom: 1px solid #ddd;
+            /* Línea gris debajo del header */
+        }
+
+        /* LOGO - Estilo del logotipo Adidas */
+        .logo {
+            font-weight: bold;
+            /* Texto en negrita para destacar */
+            font-size: 22px;
+            /* Tamaño de letra más grande */
+        }
+
+        /* MENÚ/NAVEGACIÓN - Enlaces principales del sitio */
+        nav ul {
+            display: flex;
+            /* Muestra los elementos en fila (horizontalmente) */
+            list-style: none;
+            /* Elimina los puntos de lista */
+            gap: 20px;
+            /* Espaciado de 20px entre cada elemento */
+        }
+
+        /* Enlaces del menú */
+        nav a {
+            text-decoration: none;
+            /* Elimina el subrayado de los enlaces */
+            color: black;
+            /* Color del texto negro */
+            font-weight: bold;
+            /* Texto en negrita */
+            font-size: 14px;
+            /* Tamaño de letra */
+        }
+
+        /* BUSCADOR - Caja de búsqueda */
+        .search {
+            display: flex;
+            /* Organiza los elementos en fila */
+            align-items: center;
+            /* Centra verticalmente */
+            gap: 10px;
+            /* Espaciado entre elementos */
+        }
+
+        /* Input (campo de texto) del buscador */
+        .search input {
+            padding: 6px;
+            /* Separación interna del cuadro */
+            border: 1px solid #ccc;
+            /* Borde gris claro */
+        }
+
+        /* ICONOS - Estilo para iconos (carrito, usuario, etc.) */
+        .icons span {
+            margin-left: 10px;
+            /* Espaciado a la izquierda entre iconos */
+            cursor: pointer;
+            /* Cambia el cursor a manita al pasar el ratón */
+        }
+
+        /* RESPONSIVE - Ajustes para pantallas móviles (máximo 768px de ancho) */
+        @media (max-width:768px) {
+
+            /* Oculta el menú en móviles */
+            nav {
+                display: none;
+            }
+
+            /* Oculta el campo de búsqueda en móviles */
+            .search input {
+                display: none;
+            }
+
+            /* El header se adapta y se envuelve en varias líneas si es necesario */
+            header {
+                flex-wrap: wrap;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BARRA SUPERIOR - Promoción con cronómetro para descuentos limitados -->
+    <div class="top-bar">
+        LOS DESCUENTOS HASTA EL 40% TERMINAN EN - 01:14:21
+    </div>
+
+    <!-- HEADER/ENCABEZADO PRINCIPAL - Contiene logo, menú y buscador -->
+    <header>
+
+        <!-- LOGO - Nombre de la marca Adidas -->
+        <div class="logo">
+            ADIDAS
+        </div>
+
+        <!-- MENÚ DE NAVEGACIÓN - Enlaces principales del sitio -->
+        <nav>
+            <ul>
+                <li><a href="#">ZAPATILLAS</a></li>
+                <li><a href="#">HOMBRE</a></li>
+                <li><a href="#">MUJER</a></li>
+                <li><a href="#">NIÑO</a></li>
+                <li><a href="#">NOVEDADES</a></li>
+                <li><a href="#">DEPORTES</a></li>
+                <li><a href="#">PROMOCIÓN</a></li>
+            </ul>
+        </nav>
+
+        <!-- CAJA DE BÚSQUEDA - Permite a los usuarios buscar productos -->
+        <div class="search">
+            <input type="text" placeholder="Buscar">
+        </div>
+
+    </header>
+
+</body>
+
+</html>

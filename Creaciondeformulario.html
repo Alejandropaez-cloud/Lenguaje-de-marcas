@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Encuesta al profesorado</title>
+
+<style>
+    /* ESTILO DEL CUERPO */
+    body {
+        font-family: Verdana, sans-serif;
+        font-size: 10pt;
+        background-color: rgb(0, 124, 128);
+        margin: 0;
+        padding: 20px;
+    }
+
+    /* ESTILO DEL FORMULARIO */
+    form {
+        background-color: rgb(192,192,192);
+        font-family: Verdana, sans-serif;
+        font-size: 12pt;
+        font-weight: bold;
+        text-align: center;
+        padding: 20px;
+        width: 80%;
+        margin: auto;
+        border-radius: 10px;
+    }
+
+    h1 {
+        font-size: 18pt;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 12pt;
+        font-weight: normal;
+        text-align: left;
+        margin-top: 20px;
+    }
+
+    h3 {
+        font-size: 10pt;
+        font-style: italic;
+        text-align: right;
+    }
+
+    fieldset {
+        margin: 15px 0;
+        padding: 15px;
+        border: 2px solid teal;
+        text-align: left;
+    }
+
+    legend {
+        font-size: 12pt;
+        font-weight: bold;
+    }
+
+    label {
+        font-weight: normal;
+        font-size: 10pt;
+        display: inline-block;
+        width: 180px;
+        vertical-align: top;
+    }
+
+    input, select, textarea {
+        font-family: Verdana, sans-serif;
+        font-size: 10pt;
+        margin-bottom: 8px;
+        width: 250px;
+    }
+
+    .radio-group label,
+    .checkbox-group label {
+        width: auto;
+        margin-right: 15px;
+    }
+
+    textarea {
+        width: 90%;
+        height: 80px;
+    }
+
+    .centrado {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+</head>
+
+<body>
+
+<form>
+    <h1>Encuesta al profesorado</h1>
+
+    <h2>Por favor, si es usted docente responda a las siguientes cuestiones:</h2>
+    <h3>Este formulario se visualizará mejor con navegadores de última generación</h3>
+
+    <!-- 1. INFORMACIÓN PERSONAL -->
+    <fieldset>
+        <legend>1. Información personal</legend>
+
+        <label for="apellidos">Apellidos:</label>
+        <input type="text" id="apellidos"><br>
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre"><br>
+
+        <label for="fecha">Fecha de nacimiento:</label>
+        <input type="date" id="fecha"><br>
+
+        <label>Sexo:</label>
+        <span class="radio-group">
+            <label><input type="radio" name="sexo"> Hombre</label>
+            <label><input type="radio" name="sexo"> Mujer</label>
+        </span>
+    </fieldset>
+
+    <!-- 2. INFORMACIÓN DE CONTACTO -->
+    <fieldset>
+        <legend>2. Información de contacto</legend>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono"><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email">
+    </fieldset>
+
+    <!-- 3. DATOS PROFESIONALES -->
+    <fieldset>
+        <legend>3. Datos profesionales</legend>
+
+        <label for="centro">Centro de trabajo:</label>
+        <input type="text" id="centro"><br>
+
+        <label for="localidad">Localidad:</label>
+        <input type="text" id="localidad"><br>
+
+        <label>¿Es funcionario?</label>
+        <span class="checkbox-group">
+            <label><input type="checkbox"> Sí</label>
+        </span><br>
+
+        <label for="nrp">NRP:</label>
+        <input type="text" id="nrp"><br>
+
+        <label for="seminario">Seminario / Nivel:</label>
+        <select id="seminario">
+            <option>Lengua y Literatura</option>
+            <option>Geografía e Historia</option>
+            <option>Biología y Geología</option>
+            <option>Tecnología</option>
+            <option>Educación Plástica y Visual</option>
+            <option>Música</option>
+            <option>Educación Física</option>
+            <option>Cultura y Lenguas Clásicas</option>
+            <option>Ética y Filosofía</option>
+            <option>Primer ciclo ESO</option>
+            <option>Segundo ciclo ESO</option>
+            <option>Bachillerato</option>
+            <option>FP</option>
+        </select>
+    </fieldset>
+
+    <!-- 4. OBSERVACIONES -->
+    <fieldset>
+        <legend>4. Observaciones</legend>
+
+        <label for="observaciones">Comentarios adicionales:</label><br>
+        <textarea id="observaciones"></textarea>
+    </fieldset>
+
+    <div class="centrado">
+        <input type="submit" value="Enviar encuesta">
+        <input type="reset" value="Borrar datos">
+    </div>
+</form>
+
+</body>
+</html>
