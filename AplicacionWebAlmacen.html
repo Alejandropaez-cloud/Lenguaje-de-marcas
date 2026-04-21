@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Almacén — Panel de Procedimientos</title>
+    <style>
+        :root {
+            --bg: #0a0c10; --card: #161b22; --border: #30363d;
+            --text: #c9d1d9; --text-dim: #8b949e;
+            --accent: #58a6ff; --success: #238636; --warning: #d29922; --danger: #da3633;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        /* Layout */
+        .container { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+        /* Sidebar */
+        aside { background: var(--card); border-right: 1px solid var(--border); padding: 2rem 1rem; }
+        .logo { font-weight: 700; font-size: 1.2rem; margin-bottom: 2rem; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        nav ul { list-style: none; }
+        nav li { 
+            padding: 12px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 5px;
+            transition: 0.2s; color: var(--text-dim);
+        }
+        nav li:hover { background: #21262d; color: var(--text); }
+        nav li.active { background: var(--accent); color: white; }
+
+        /* Main Content */
+        main { padding: 2rem 3rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        
+        /* Grid de Operaciones */
+        .crud-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+        .card h3 { margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
+
+        /* Formularios */
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--text-dim); }
+        input, select { 
+            width: 100%; background: var(--bg); border: 1px solid var(--border); 
+            padding: 10px; color: white; border-radius: 5px; outline: none;
+        }
+        input:focus { border-color: var(--accent); }
+
+        /* Botones */
+        .btn { 
+            padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; 
+            font-weight: 600; font-size: 0.85rem; transition: 0.3s;
+        }
+        .btn-insert { background: var(--success); color: white; }
+        .btn-select { background: var(--accent); color: white; }
+        .btn-update { background: var(--warning); color: white; }
+        .btn-delete { background: var(--danger); color: white; }
+        .btn:hover { opacity: 0.8; }
+
+        /* Consola de Resultados */
+        .console {
+            margin-top: 2rem; background: #000; border-radius: 8px; padding: 1rem;
+            font-family: 'Consolas', monospace; font-size: 0.9rem; border: 1px solid var(--border);
+            min-height: 150px; max-height: 300px; overflow-y: auto;
+        }
+        .console-header { color: var(--text-dim); border-bottom: 1px solid #222; margin-bottom: 10px; padding-bottom: 5px; display: flex; justify-content: space-between; }
+        .log-entry { margin-bottom: 5px; border-left: 3px solid var(--accent); padding-left: 10px; }
+        .log-success { border-color: var(--success); color: #7ee787; }
+        .log-error { border-color: var(--danger); color: #ffa198; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <aside>
+        <div class="logo"><span>📦</span> bdAlmacen</div>
+        <nav>
+            <ul id="menu-tablas">
+                <li class="active" onclick="cambiarTabla('Proveedores')">Proveedores</li>
+                <li onclick="cambiarTabla('Productos')">Productos</li>
+                <li onclick="cambiarTabla('Pedidos')">Pedidos</li>
+                <li onclick="cambiarTabla('Categorias')">Categorías</li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <header>
+            <h2 id="titulo-tabla">Gestión de Proveedores</h2>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">Operaciones CRUD listas para inyectar procedimientos.</p>
+        </header>
+
+        <div class="crud-grid">
+            <div class="card">
+                <h3>[C] Create / Insertar</h3>
+                <div id="fields-create" class="form-container"></div>
+                <button class="btn btn-insert" onclick="ejecutarOperacion('CREATE')">Ejecutar INSERT</button>
+            </div>
+
+            <div class="card">
+                <h3>[R] Read / Consultar</h3>
+                <div id="fields-read" class="form-container"></div>
+                <button class="btn btn-select" onclick="ejecutarOperacion('READ')">Ejecutar SELECT</button>
+            </div>
+
+            <div class="card">
+                <h3>[U] Update / Modificar</h3>
+                <div id="fields-update" class="form-container"></div>
+                <button class="btn btn-update" onclick="ejecutarOperacion('UPDATE')">Ejecutar UPDATE</button>
+            </div>
+
+            <div class="card">
+                <h3>[D] Delete / Eliminar</h3>
+                <div id="fields-delete" class="form-container"></div>
+                <button class="btn btn-delete" onclick="ejecutarOperacion('DELETE')">Ejecutar DELETE</button>
+            </div>
+        </div>
+
+        <div class="console">
+            <div class="console-header">
+                <span>Resultado del Procedimiento</span>
+                <span style="cursor:pointer" onclick="limpiarConsola()">Limpiar _</span>
+            </div>
+            <div id="output">
+                <div class="log-entry">Esperando ejecución...</div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Configuración de campos por tabla
+    const configTablas = {
+        'Proveedores': ['ID_Prov', 'Nombre', 'Contacto', 'Ciudad'],
+        'Productos': ['ID_Prod', 'Nombre', 'Precio', 'Stock', 'ID_Cat'],
+        'Pedidos': ['ID_Ped', 'Fecha', 'ID_Prov', 'Total'],
+        'Categorias': ['ID_Cat', 'Nombre', 'Descripcion']
+    };
+
+    let tablaActual = 'Proveedores';
+
+    // ─── LÓGICA DE INTERFAZ ───
+
+    function cambiarTabla(nombre) {
+        tablaActual = nombre;
+        document.getElementById('titulo-tabla').innerText = `Gestión de ${nombre}`;
+        
+        // Actualizar menú
+        document.querySelectorAll('nav li').forEach(li => {
+            li.classList.toggle('active', li.innerText === nombre);
+        });
+
+        renderizarFormularios();
+        log(`Cambiado a tabla: ${nombre}`);
+    }
+
+    function renderizarFormularios() {
+        const campos = configTablas[tablaActual];
+        const idPrincipal = campos[0];
+
+        // Template Generador
+        const inputHTML = (label, id) => `
+            <div class="form-group">
+                <label>${label}</label>
+                <input type="text" id="${id}" placeholder="Ingrese ${label}...">
+            </div>
+        `;
+
+        // Llenar Create
+        document.getElementById('fields-create').innerHTML = campos.map(c => inputHTML(c, `c-${c}`)).join('');
+        
+        // Llenar Read (Solo ID para búsqueda o vacío para todos)
+        document.getElementById('fields-read').innerHTML = inputHTML(`${idPrincipal} (Opcional)`, `r-${idPrincipal}`);
+        
+        // Llenar Update (ID + campos a cambiar)
+        document.getElementById('fields-update').innerHTML = 
+            inputHTML(`${idPrincipal} (Referencia)`, `u-${idPrincipal}`) +
+            `<div class="form-group"><label>Campo a cambiar</label><select id="u-campo">${campos.slice(1).map(c => `<option value="${c}">${c}</option>`)}</select></div>` +
+            inputHTML(`Nuevo Valor`, `u-valor`);
+
+        // Llenar Delete
+        document.getElementById('fields-delete').innerHTML = inputHTML(`${idPrincipal} (Obligatorio)`, `d-${idPrincipal}`);
+    }
+
+    // ─── CONEXIÓN: AQUÍ ES DONDE TÚ INSERTARÁS TU CÓDIGO ───
+
+    const ServidorBD = {
+        async ejecutar(tabla, operacion, datos) {
+            // Este es el "puente". Aquí es donde harás el fetch() a tu backend 
+            // o llamarás a la función que ejecute el procedimiento almacenado.
+            
+            console.log(`Ejecutando ${operacion} en ${tabla}`, datos);
+
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        success: true,
+                        mensaje: `Procedimiento de ${operacion} ejecutado correctamente en la tabla ${tabla}.`,
+                        data: datos
+                    });
+                }, 600);
+            });
+        }
+    };
+
+    async function ejecutarOperacion(op) {
+        let datos = {};
+        const campos = configTablas[tablaActual];
+
+        // Recolectar datos según la operación
+        if(op === 'CREATE') {
+            campos.forEach(c => datos[c] = document.getElementById(`c-${c}`).value);
+        } else if(op === 'DELETE') {
+            datos.id = document.getElementById(`d-${campos[0]}`).value;
+        }
+
+        log(`Llamando a procedimiento ${op}_${tablaActual}...`, 'info');
+
+        try {
+            const respuesta = await ServidorBD.ejecutar(tablaActual, op, datos);
+            if(respuesta.success) {
+                log(respuesta.mensaje, 'success');
+                log(JSON.stringify(respuesta.data), 'success');
+            }
+        } catch (error) {
+            log("Error en el procedimiento: " + error, 'error');
+        }
+    }
+
+    // ─── UTILIDADES ───
+
+    function log(msg, tipo = '') {
+        const out = document.getElementById('output');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${tipo === 'success' ? 'log-success' : tipo === 'error' ? 'log-error' : ''}`;
+        entry.innerText = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+        out.prepend(entry);
+    }
+
+    function limpiarConsola() {
+        document.getElementById('output').innerHTML = '';
+    }
+
+    // Inicializar
+    renderizarFormularios();
+</script>
+
+</body>
+</html>

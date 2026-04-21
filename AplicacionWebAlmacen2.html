@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bdAlmacen — Sistema CRUD</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+    :root {
+      --bg:        #0f1117;
+      --bg2:       #181c27;
+      --bg3:       #1f2435;
+      --border:    #2a2f42;
+      --border2:   #353c55;
+      --text:      #e8ecf5;
+      --text2:     #8890a8;
+      --text3:     #565e78;
+      --purple:    #7c6df0;
+      --purple-bg: #1e1a3a;
+      --green:     #3dd68c;
+      --green-bg:  #0d2a1e;
+      --amber:     #f5a623;
+      --amber-bg:  #2a1e0a;
+      --blue:      #4da6ff;
+      --blue-bg:   #0a1a2e;
+      --red:       #f06060;
+      --red-bg:    #2a0f0f;
+      --radius:    10px;
+      --radius-lg: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-icon {
+      width: 32px; height: 32px;
+      background: var(--purple-bg);
+      border: 1px solid var(--purple);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .app-header h1 {
+      font-size: 16px; font-weight: 500; letter-spacing: -0.3px;
+    }
+    .db-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; font-weight: 500;
+      background: var(--purple-bg);
+      color: var(--purple);
+      border: 1px solid var(--purple);
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-left: auto;
+    }
+
+    /* ── MENU ── */
+    .menu-screen { padding: 40px 28px; }
+    .menu-header { margin-bottom: 28px; }
+    .menu-header h2 { font-size: 22px; font-weight: 300; letter-spacing: -0.5px; }
+    .menu-header p  { font-size: 13px; color: var(--text2); margin-top: 6px; }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      max-width: 700px;
+    }
+
+    .table-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 20px;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s, transform 0.12s;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .table-card:hover {
+      border-color: var(--border2);
+      background: var(--bg3);
+      transform: translateY(-2px);
+    }
+    .card-icon {
+      width: 38px; height: 38px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-icon svg { width: 20px; height: 20px; }
+    .table-card h3  { font-size: 15px; font-weight: 500; }
+    .table-card p   { font-size: 12px; color: var(--text2); line-height: 1.5; }
+    .card-arrow {
+      font-size: 18px; color: var(--text3);
+      align-self: flex-end; margin-top: auto;
+      transition: color 0.15s;
+    }
+    .table-card:hover .card-arrow { color: var(--text2); }
+
+    /* card color variants */
+    .card-prov  .card-icon { background: var(--purple-bg); color: var(--purple); }
+    .card-prod  .card-icon { background: var(--green-bg);  color: var(--green); }
+    .card-ped   .card-icon { background: var(--amber-bg);  color: var(--amber); }
+    .card-cat   .card-icon { background: var(--blue-bg);   color: var(--blue); }
+    .card-prov:hover { border-color: var(--purple); }
+    .card-prod:hover { border-color: var(--green); }
+    .card-ped:hover  { border-color: var(--amber); }
+    .card-cat:hover  { border-color: var(--blue); }
+
+    /* ── CRUD SCREEN ── */
+    .crud-screen { display: none; }
+
+    .crud-topbar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 28px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .back-btn {
+      background: transparent; border: 1px solid var(--border2);
+      color: var(--text2); border-radius: 8px;
+      padding: 6px 14px; cursor: pointer; font-size: 13px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      transition: background 0.15s, color 0.15s;
+    }
+    .back-btn:hover { background: var(--bg3); color: var(--text); }
+    .crud-topbar-title { font-size: 15px; font-weight: 500; }
+    .table-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid;
+    }
+
+    /* tabs */
+    .crud-tabs {
+      display: flex; gap: 4px; padding: 14px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .ctab {
+      padding: 7px 18px; border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text2);
+      cursor: pointer; font-size: 13px; font-weight: 500;
+      font-family: 'IBM Plex Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .ctab:hover:not(.active) { background: var(--bg3); color: var(--text); }
+    .ctab.active { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+    .ctab.tab-c.active { background: var(--green-bg);  color: var(--green);  border-color: var(--green); }
+    .ctab.tab-r.active { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue); }
+    .ctab.tab-u.active { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber); }
+    .ctab.tab-d.active { background: var(--red-bg);    color: var(--red);    border-color: var(--red); }
+
+    /* operation panels */
+    .crud-body { padding: 24px 28px; }
+    .op-panel { display: none; }
+    .op-panel.active { display: block; }
+
+    .op-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 22px;
+    }
+
+    .op-tag {
+      display: inline-block; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; font-weight: 500;
+      padding: 3px 10px; border-radius: 20px; border: 1px solid;
+      margin-bottom: 18px;
+    }
+    .tag-c { background: var(--green-bg);  color: var(--green);  border-color: var(--green); }
+    .tag-r { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue); }
+    .tag-u { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber); }
+    .tag-d { background: var(--red-bg);    color: var(--red);    border-color: var(--red); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.5px;
+      text-transform: uppercase; color: var(--text3);
+    }
+    .form-group input, .form-group select {
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); border-radius: 8px;
+      padding: 9px 12px; font-size: 13px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: var(--border2);
+      border-color: #555e78;
+    }
+    .form-group input::placeholder { color: var(--text3); }
+    .form-group select option { background: var(--bg3); }
+
+    .btn-row { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      padding: 8px 20px; border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      cursor: pointer; font-size: 13px; font-weight: 500;
+      font-family: 'IBM Plex Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .btn:hover { background: var(--bg3); color: var(--text); }
+    .btn-c { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+    .btn-r { background: var(--blue-bg);  color: var(--blue);  border-color: var(--blue); }
+    .btn-u { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
+    .btn-d { background: var(--red-bg);   color: var(--red);   border-color: var(--red); }
+    .btn-c:hover { opacity: 0.8; background: var(--green-bg); }
+    .btn-r:hover { opacity: 0.8; background: var(--blue-bg); }
+    .btn-u:hover { opacity: 0.8; background: var(--amber-bg); }
+    .btn-d:hover { opacity: 0.8; background: var(--red-bg); }
+
+    .result-box {
+      margin-top: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px; color: var(--text3);
+      min-height: 44px; line-height: 1.6;
+    }
+
+    /* footer */
+    .app-footer {
+      text-align: center; padding: 20px;
+      font-size: 11px; color: var(--text3);
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    @media(max-width: 520px) {
+      .menu-grid  { grid-template-columns: 1fr; }
+      .form-grid  { grid-template-columns: 1fr; }
+      .crud-tabs  { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-icon">🗄️</div>
+  <h1>Sistema de Almacén</h1>
+  <span class="db-pill">bdAlmacen</span>
+</div>
+
+<!-- MENÚ PRINCIPAL -->
+<div class="menu-screen" id="menu-screen">
+  <div class="menu-header">
+    <h2>Selecciona una tabla</h2>
+    <p>Elige la tabla que deseas gestionar para acceder a sus operaciones CRUD.</p>
+  </div>
+
+  <div class="menu-grid">
+
+    <div class="table-card card-prov" onclick="abrirTabla('proveedores')">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <h3>Proveedores</h3>
+      <p>Gestión de datos de los proveedores del almacén.</p>
+      <span class="card-arrow">→</span>
+    </div>
+
+    <div class="table-card card-prod" onclick="abrirTabla('productos')">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+          <line x1="12" y1="12" x2="12" y2="16"/>
+          <line x1="10" y1="14" x2="14" y2="14"/>
+        </svg>
+      </div>
+      <h3>Productos</h3>
+      <p>Inventario y catálogo de productos disponibles.</p>
+      <span class="card-arrow">→</span>
+    </div>
+
+    <div class="table-card card-ped" onclick="abrirTabla('pedidos')">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </div>
+      <h3>Pedidos</h3>
+      <p>Registro y seguimiento de pedidos realizados.</p>
+      <span class="card-arrow">→</span>
+    </div>
+
+    <div class="table-card card-cat" onclick="abrirTabla('categorias')">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="7" height="7"/>
+          <rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/>
+        </svg>
+      </div>
+      <h3>Categorías</h3>
+      <p>Clasificación y organización de los productos.</p>
+      <span class="card-arrow">→</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- PANTALLA CRUD -->
+<div class="crud-screen" id="crud-screen">
+
+  <div class="crud-topbar">
+    <button class="back-btn" onclick="volverMenu()">← Volver</button>
+    <span class="crud-topbar-title" id="crud-title">Tabla</span>
+    <span class="table-pill" id="crud-pill"></span>
+  </div>
+
+  <div class="crud-tabs">
+    <button class="ctab tab-c active" onclick="showOp('crear', this)">+ Crear</button>
+    <button class="ctab tab-r"        onclick="showOp('leer', this)">⊙ Leer</button>
+    <button class="ctab tab-u"        onclick="showOp('actualizar', this)">✎ Actualizar</button>
+    <button class="ctab tab-d"        onclick="showOp('eliminar', this)">✕ Eliminar</button>
+  </div>
+
+  <div class="crud-body">
+
+    <!-- CREATE -->
+    <div id="op-crear" class="op-panel active">
+      <div class="op-card">
+        <span class="op-tag tag-c">CREATE — INSERT</span>
+        <div class="form-grid" id="fields-crear"></div>
+        <div class="btn-row">
+          <button class="btn btn-c" onclick="ejecutar('crear')">Insertar registro</button>
+          <button class="btn"       onclick="limpiarForm('crear')">Limpiar</button>
+        </div>
+        <div class="result-box" id="res-crear">// Aquí va tu función INSERT...</div>
+      </div>
+    </div>
+
+    <!-- READ -->
+    <div id="op-leer" class="op-panel">
+      <div class="op-card">
+        <span class="op-tag tag-r">READ — SELECT</span>
+        <div class="form-grid" id="fields-leer"></div>
+        <div class="btn-row">
+          <button class="btn btn-r" onclick="ejecutar('leer')">Consultar</button>
+          <button class="btn"       onclick="limpiarForm('leer')">Limpiar</button>
+        </div>
+        <div class="result-box" id="res-leer">// Aquí va tu función SELECT...</div>
+      </div>
+    </div>
+
+    <!-- UPDATE -->
+    <div id="op-actualizar" class="op-panel">
+      <div class="op-card">
+        <span class="op-tag tag-u">UPDATE — MODIFICAR</span>
+        <div class="form-grid" id="fields-actualizar"></div>
+        <div class="btn-row">
+          <button class="btn btn-u" onclick="ejecutar('actualizar')">Actualizar</button>
+          <button class="btn"       onclick="limpiarForm('actualizar')">Limpiar</button>
+        </div>
+        <div class="result-box" id="res-actualizar">// Aquí va tu función UPDATE...</div>
+      </div>
+    </div>
+
+    <!-- DELETE -->
+    <div id="op-eliminar" class="op-panel">
+      <div class="op-card">
+        <span class="op-tag tag-d">DELETE — ELIMINAR</span>
+        <div class="form-grid" id="fields-eliminar"></div>
+        <div class="btn-row">
+          <button class="btn btn-d" onclick="ejecutar('eliminar')">Eliminar</button>
+          <button class="btn"       onclick="limpiarForm('eliminar')">Limpiar</button>
+        </div>
+        <div class="result-box" id="res-eliminar">// Aquí va tu función DELETE...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="app-footer">bdAlmacen · Sistema CRUD · Gestión de Almacén</div>
+
+<script>
+  const tablas = {
+    proveedores: {
+      nombre: 'Proveedores',
+      color: 'background:#1e1a3a;color:#7c6df0;border-color:#7c6df0',
+      campos: {
+        crear:      ['ID Proveedor', 'Nombre', 'Teléfono', 'Dirección'],
+        leer:       ['ID Proveedor (vacío = todos)', 'Nombre (filtro)'],
+        actualizar: ['ID Proveedor', 'Campo a modificar', 'Nuevo valor'],
+        eliminar:   ['ID Proveedor']
+      }
+    },
+    productos: {
+      nombre: 'Productos',
+      color: 'background:#0d2a1e;color:#3dd68c;border-color:#3dd68c',
+      campos: {
+        crear:      ['ID Producto', 'Nombre', 'Precio', 'ID Categoría'],
+        leer:       ['ID Producto (vacío = todos)', 'Nombre (filtro)'],
+        actualizar: ['ID Producto', 'Campo a modificar', 'Nuevo valor'],
+        eliminar:   ['ID Producto']
+      }
+    },
+    pedidos: {
+      nombre: 'Pedidos',
+      color: 'background:#2a1e0a;color:#f5a623;border-color:#f5a623',
+      campos: {
+        crear:      ['ID Pedido', 'ID Proveedor', 'Fecha', 'Estado'],
+        leer:       ['ID Pedido (vacío = todos)', 'Estado (filtro)'],
+        actualizar: ['ID Pedido', 'Campo a modificar', 'Nuevo valor'],
+        eliminar:   ['ID Pedido']
+      }
+    },
+    categorias: {
+      nombre: 'Categorías',
+      color: 'background:#0a1a2e;color:#4da6ff;border-color:#4da6ff',
+      campos: {
+        crear:      ['ID Categoría', 'Nombre', 'Descripción'],
+        leer:       ['ID Categoría (vacío = todos)', 'Nombre (filtro)'],
+        actualizar: ['ID Categoría', 'Campo a modificar', 'Nuevo valor'],
+        eliminar:   ['ID Categoría']
+      }
+    }
+  };
+
+  let tablaActual = null;
+
+  function abrirTabla(key) {
+    tablaActual = key;
+    const t = tablas[key];
+
+    document.getElementById('menu-screen').style.display = 'none';
+    document.getElementById('crud-screen').style.display = 'block';
+
+    document.getElementById('crud-title').textContent = t.nombre;
+
+    const pill = document.getElementById('crud-pill');
+    pill.textContent = t.nombre;
+    pill.style.cssText = t.color + ';font-family:IBM Plex Mono,monospace;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid';
+
+    ['crear','leer','actualizar','eliminar'].forEach(op => renderFields(op, t.campos[op]));
+
+    document.querySelectorAll('.ctab').forEach((b,i) => b.classList.toggle('active', i===0));
+    document.querySelectorAll('.op-panel').forEach((p,i) => p.classList.toggle('active', i===0));
+  }
+
+  function renderFields(op, campos) {
+    const cont = document.getElementById('fields-' + op);
+    cont.innerHTML = campos.map(c =>
+      `<div class="form-group">
+        <label>${c}</label>
+        <input type="text" placeholder="Valor...">
+      </div>`
+    ).join('');
+  }
+
+  function volverMenu() {
+    document.getElementById('crud-screen').style.display = 'none';
+    document.getElementById('menu-screen').style.display = 'block';
+    tablaActual = null;
+  }
+
+  function showOp(op, btn) {
+    document.querySelectorAll('.op-panel').forEach(el => el.classList.remove('active'));
+    document.getElementById('op-' + op).classList.add('active');
+    document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  const msgs = {
+    crear:      '// ⬅ Aquí va tu función INSERT para ',
+    leer:       '// ⬅ Aquí va tu función SELECT para ',
+    actualizar: '// ⬅ Aquí va tu función UPDATE para ',
+    eliminar:   '// ⬅ Aquí va tu función DELETE para '
+  };
+  const defaults = {
+    crear:      '// Aquí va tu función INSERT...',
+    leer:       '// Aquí va tu función SELECT...',
+    actualizar: '// Aquí va tu función UPDATE...',
+    eliminar:   '// Aquí va tu función DELETE...'
+  };
+
+  function ejecutar(op) {
+    document.getElementById('res-' + op).textContent =
+      msgs[op] + (tablaActual ? tablas[tablaActual].nombre : 'la tabla');
+  }
+
+  function limpiarForm(op) {
+    document.querySelectorAll('#fields-' + op + ' input').forEach(i => i.value = '');
+    document.getElementById('res-' + op).textContent = defaults[op];
+  }
+</script>
+
+</body>
+</html>
