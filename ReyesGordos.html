@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reyes Godos</title>
+</head>
+
+<body>
+    <h1>Reyes Godos</h1>
+    <div>
+        <label for="nombreRey">Nombre del rey godo:</label>
+        <input type="text" id="nombreRey" placeholder="Ej: Leovigildo">
+        <button type="button" id="crearRey">Crear</button>
+    </div>
+    <div id="listaReyes">aquí aparecen los reyes</div>
+    <script>
+
+        // 1. Seleccionamos los elementos del HTML que ya existen
+        const boton = document.getElementById("crearRey");
+        const inputNombre = document.getElementById("nombreRey");
+        const contenedorLista = document.getElementById("listaReyes");
+
+        // 2. Escuchamos el clic en el botón
+        boton.addEventListener("click", function() {
+            // 3. Capturamos lo que el usuario ha escrito en ese preciso instante
+            let nombreEscrito = inputNombre.value;
+
+            // Validamos que no esté vacío
+            if (nombreEscrito.trim() !== "") {
+                // 4. Creamos el nodo tipo Element para el botón
+                const generarBoton = document.createElement("button");
+
+                // Actualizamos el nodo hijo asignándole el texto mediante "="
+                generarBoton.textContent = nombreEscrito;
+
+                generarBoton.addEventListener("click", function () {
+                    this.remove();
+                })
+
+                // 5. Enganchamos el nodo hijo (generarBoton) a su padre (la lista)
+                contenedorLista.appendChild(generarBoton);
+
+                // 6. Limpiamos el input para el siguiente rey
+                inputNombre.value = "";
+
+            } else {
+                alert("¡Escribe un nombre primero!");
+            }
+
+
+        });
+
+    </script>
+
+</body>
+
+</html>
